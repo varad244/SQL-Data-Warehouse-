@@ -1,0 +1,22 @@
+INSERT INTO silver.crm_cust_info(
+    cst_id, cst_key, cst_firstname, cst_lastname,
+    cst_marital_status, cst_gndr, cst_create_date
+)
+SELECT
+    cst_id,
+    cst_key,
+    TRIM(cst_firstname),
+    TRIM(cst_lastname),
+    CASE
+        WHEN UPPER(TRIM(cst_marital_status)) = 'S' THEN 'Single'
+        WHEN UPPER(TRIM(cst_marital_status)) = 'M' THEN 'Married'
+        ELSE 'N/A'
+    END,
+    CASE
+        WHEN UPPER(TRIM(cst_gndr)) = 'F' THEN 'Female'
+        WHEN UPPER(TRIM(cst_gndr)) = 'M' THEN 'Male'
+        ELSE 'N/A'
+    END,
+    STR_TO_DATE(cst_create_date, '%Y-%m-%d')
+FROM bronze.crm_cust_info;
+ 
