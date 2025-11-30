@@ -31,3 +31,17 @@ having count(*)>1  or cst_id is null
 select * FROM Bronze.crm_prd_info
 where prd_end_dt <  prd_start_dt
 
+
+-- check for invalid dates 
+
+select
+nullif(sls_due_dt,0) sls_due_dt
+from Bronze.crm_sales_details 
+where sls_due_dt <= 0
+or length(sls_due_dt) != 8
+or sls_due_dt > 20500101
+or sls_due_dt > 19000101
+
+
+
+
