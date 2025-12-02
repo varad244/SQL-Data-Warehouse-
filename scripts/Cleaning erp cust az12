@@ -1,0 +1,5 @@
+select 
+cid,
+bdate,
+gen
+from Bronze.erp_cust_az12
