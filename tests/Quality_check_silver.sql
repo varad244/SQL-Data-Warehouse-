@@ -1,0 +1,64 @@
+-- check for unwanted spaces
+select cst_firstname
+from bronze.crm_cust_info
+where cst_firstname != trim(cst_firstname)
+
+
+-- false dates converted 
+ALTER TABLE bronze.crm_cust_info 
+MODIFY COLUMN cst_create_date VARCHAR(20);
+
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE bronze.crm_cust_info
+SET cst_create_date = NULL
+WHERE cst_create_date = '0000-00-00' OR cst_create_date = '';
+
+
+-- check for nulls and duplicates in the primary key
+
+select 
+cst_id,
+count(*)
+from bronze.crm_cust_info
+group by cst_id
+having count(*)>1  or cst_id is null
+
+
+
+-- check for invalid date orders 
+
+select * FROM Bronze.crm_prd_info
+where prd_end_dt <  prd_start_dt
+
+
+-- check for invalid dates 
+
+select
+nullif(sls_due_dt,0) sls_due_dt
+from Bronze.crm_sales_details 
+where sls_due_dt <= 0
+or length(sls_due_dt) != 8
+or sls_due_dt > 20500101
+or sls_due_dt > 19000101
+
+
+-- check data consistency between sales,quantity and price 
+
+select distinct
+sls_sales,
+sls_quantity,
+sls_price 
+from Bronze.crm_sales_details
+where sls_sales != sls_quantity * sls_price
+or sls_sales is null or sls_quantity is null or sls_price is null
+or sls_sales <=0 or sls_quantity <= 0 or sls_price <= 0 
+order by sls_quantity,sls_price,sls_sales
+
+
+-- identify out of range dates 
+
+SELECT DISTINCT bdate
+FROM bronze.erp_cust_az12
+WHERE bdate < '1924-01-01' 
+   OR bdate > CURRENT_DATE();
